@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOBRAIN: Human vs AI</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #0d1117;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: #58a6ff;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .options-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:active {
+      background: #1f6feb;
+      color: #fff;
+      transform: scale(0.98);
+    }
+    .score-box {
+      font-size: 1.2rem;
+      color: #3fb950;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>🧠 $NOBRAIN Challenge</h1>
+    <p class="subtitle">Half Human, Half AI. 100% Zero-Stress.</p>
+    
+    <div id="quiz-container">
+      <div id="question" class="question">جاري تحميل التحدي...</div>
+      <div id="options" class="options-btn"></div>
+    </div>
+
+    <div id="result-container" style="display: none;">
+      <h2>🎉 انتهى التحدي!</h2>
+      <p id="final-score" class="score-box"></p>
+      <br>
+      <button onclick="restartQuiz()">إعادة التحدي 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const questions = [
+      {
+        q: "ما هو الشيء الذي يسير بلا أقدام ويدخل الأذنين فقط؟",
+        options: ["الصوت", "الريح", "الضوء"],
+        answer: 0
+      },
+      {
+        q: "إذا تجاوزت المتسابق الثاني في سباق، في أي مركز أصبحت؟",
+        options: ["المركز الأول", "المركز الثاني", "المركز الثالث"],
+        answer: 1
+      },
+      {
+        q: "شيء كلما أخذت منه كِبَر، وكلما أضفت إليه صَغُر؟",
+        options: ["الحفرة", "العمر", "المحيط"],
+        answer: 0
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      if (currentQ >= questions.length) {
+        showResult();
+        return;
+      }
+      const qData = questions[currentQ];
+      document.getElementById("question").innerText = qData.q;
+      const optsContainer = document.getElementById("options");
+      optsContainer.innerHTML = "";
+
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(idx);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selectedIdx) {
+      if (selectedIdx === questions[currentQ].answer) {
+        score += 100;
+      }
+      currentQ++;
+      loadQuestion();
+    }
+
+    function showResult() {
+      document.getElementById("quiz-container").style.display = "none";
+      document.getElementById("result-container").style.display = "block";
+      document.getElementById("final-score").innerText = `نقاطك ضد الذكاء الاصطناعي: ${score} نقطة!`;
+    }
+
+    function restartQuiz() {
+      currentQ = 0;
+      score = 0;
+      document.getElementById("quiz-container").style.display = "block";
+      document.getElementById("result-container").style.display = "none";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
